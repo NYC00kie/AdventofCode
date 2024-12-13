@@ -20,7 +20,7 @@ for i in range(len(file1)-3):
 			print(i,j)
 print(count)
 for i in range(3,len(file1)):
-	for j in range(len(file1[i])-3):
+	for j in range(3,len(file1[i])):
 		if file1[i][j] == "X" and file1[i-1][j-1] == "M" and file1[i-2][j-2] == "A" and file1[i-3][j-3] == "S":
 			count += 1
 			print(i,j)
