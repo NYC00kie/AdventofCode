@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 #part 2
 # 1743 too high
 # 1700 too high
-# 1791 wrong
-# 1602 is right
+# 1791 is wrong
+# 1602 is right (not from my code)
 
 # Yes, im basicly making a game.
 
@@ -97,9 +97,8 @@ class Player(object):
 
 
 
-
+# first pass to see what spots actually influence the path
 file1 = open("my_file.csv", "r").read()
-count = 0
 file1 = np.array([list(x) for x in file1.split("\n")])
 
 file2 = copy.deepcopy(file1)
@@ -114,9 +113,9 @@ except Exception as e:
 	print(player.direction)
 	print(e)
 
-directions = []
-# for i in range(len(file2)):
-# 	for j in range(len(file2[0])):
+
+count = 0
+#going over the just gotten spots and see if it loops or not by simulating it like in part 1.
 for num,cords in enumerate(list(player.unique_loc)):
 	i,j = cords
 	file2 = copy.deepcopy(file1)
@@ -124,7 +123,8 @@ for num,cords in enumerate(list(player.unique_loc)):
 		file2[i,j] = "#"
 	else:
 		continue
-	print(len(player.unique_loc),num,i,j)
+	if num % 100 == 0:
+		print(len(player.unique_loc),num,i,j)
 	player2 = Player(file2)
 	if player2.location == (i,j):
 		print("skipped Player location")
@@ -133,21 +133,21 @@ for num,cords in enumerate(list(player.unique_loc)):
 	try:
 		c = 0
 		while player2.move():
-			# reduce overhead
 			c += 1
 			# if c % 1000 == 0:
 				# save_plot(player2.visits,c,num)
 				# print(len(player.unique_loc),num,i,j, player2.visits[player2.location[0],player2.location[1]], c, sum(sum(player2.visits)),len(file2)*len(file2[0]), len(list(player2.unique_loc)))
-			if player2.visits[player2.location[0],player2.location[1]] > 4:
+			
+			# this is the loop condition.
+			if player2.visits[player2.location[0],player2.location[1]] > 20:
+				count += 1
 				break;
 			#print(player)
 
-		count += 1
-	except Exception as e:
-		# directions.append(player2.direction)
-		print(e)
+		
+	except IndexError as e:
+		# print(e)
 		pass
 
 
-# print(directions)
 print(count)
