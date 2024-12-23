@@ -1,10 +1,19 @@
 import numpy as np
 import copy
+import matplotlib.pyplot as plt
 #part 2
 # 1743 too high
 # 1700 too high
+# 1791 wrong
+# 1602 is right
 
 # Yes, im basicly making a game.
+
+def save_plot(grid,i,entry):
+    plt.imshow(grid)
+    plt.colorbar()
+    plt.savefig(f"./out/grid_{entry}_{i}.jpg", dpi=800)
+    plt.clf()
 
 class Player(object):
 	"""docstring for Player"""
@@ -15,6 +24,8 @@ class Player(object):
 		self.dimensions = (len(board),len(board[0]))
 		self.location = (0,0)
 		self.unique_loc = set([])
+		self.locations = []
+		self.visits = np.zeros([len(self.board),len(self.board[0])])
 		self.find_location()
 
 	def __str__(self):
@@ -35,6 +46,8 @@ class Player(object):
 			# up
 			if self.direction % 4 == 0 and self.board[self.location[0]-1,self.location[1]] != "#":
 				self.unique_loc.add(self.location)
+				self.visits[self.location[0],self.location[1]] += 1
+				self.locations.append(self.location)
 				self.board[self.location[0],self.location[1]] = "X"
 				self.location = (self.location[0]-1,self.location[1])
 				self.board[self.location[0],self.location[1]] = "^"
@@ -45,6 +58,8 @@ class Player(object):
 			#right
 			if self.direction % 4 == 1 and self.board[self.location[0],self.location[1]-1] != "#":
 				self.unique_loc.add(self.location)
+				self.visits[self.location[0],self.location[1]] += 1
+				self.locations.append(self.location)
 				self.board[self.location[0],self.location[1]] = "X"
 				self.location = (self.location[0],self.location[1]-1)
 				self.board[self.location[0],self.location[1]] = "^"
@@ -55,6 +70,8 @@ class Player(object):
 			#down
 			if self.direction % 4 == 2 and self.board[self.location[0]+1,self.location[1]] != "#":
 				self.unique_loc.add(self.location)
+				self.visits[self.location[0],self.location[1]] += 1
+				self.locations.append(self.location)
 				self.board[self.location[0],self.location[1]] = "X"
 				self.location = (self.location[0]+1,self.location[1])
 				self.board[self.location[0],self.location[1]] = "^"
@@ -66,6 +83,8 @@ class Player(object):
 			#left
 			if self.direction % 4 == 3 and self.board[self.location[0],self.location[1]+1] != "#":
 				self.unique_loc.add(self.location)
+				self.visits[self.location[0],self.location[1]] += 1
+				self.locations.append(self.location)
 				self.board[self.location[0],self.location[1]] = "X"
 				self.location = (self.location[0],self.location[1]+1)
 				self.board[self.location[0],self.location[1]] = "^"
@@ -91,38 +110,44 @@ try:
 		#print(player)
 
 except Exception as e:
+	player.unique_loc.add(player.location)
 	print(player.direction)
-	print(player.board)
-	print(len(player.unique_loc)+1)
 	print(e)
 
-
-
-for cords in list(player.unique_loc):
-	if player.location == cords:
-		continue
+directions = []
+# for i in range(len(file2)):
+# 	for j in range(len(file2[0])):
+for num,cords in enumerate(list(player.unique_loc)):
 	i,j = cords
 	file2 = copy.deepcopy(file1)
-	print(i,j)
 	if file2[i,j] != "#":
 		file2[i,j] = "#"
 	else:
 		continue
-
-	player = Player(file2)
+	print(len(player.unique_loc),num,i,j)
+	player2 = Player(file2)
+	if player2.location == (i,j):
+		print("skipped Player location")
+		continue
 
 	try:
-		while player.move():
-			if player.direction < -10000:
+		c = 0
+		while player2.move():
+			# reduce overhead
+			c += 1
+			# if c % 1000 == 0:
+				# save_plot(player2.visits,c,num)
+				# print(len(player.unique_loc),num,i,j, player2.visits[player2.location[0],player2.location[1]], c, sum(sum(player2.visits)),len(file2)*len(file2[0]), len(list(player2.unique_loc)))
+			if player2.visits[player2.location[0],player2.location[1]] > 4:
 				break;
 			#print(player)
 
 		count += 1
-		print(player.board)
 	except Exception as e:
-		print(player.direction)
-		print(player.board)
-		print(len(player.unique_loc)+1)
+		# directions.append(player2.direction)
 		print(e)
+		pass
 
+
+# print(directions)
 print(count)
